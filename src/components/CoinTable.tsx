@@ -15,7 +15,6 @@ import {
   HStack,
   VStack,
   useColorMode,
-  Show,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
@@ -43,8 +42,6 @@ const CoinTable: React.FC = () => {
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
 
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.800', 'white');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
 
@@ -193,7 +190,10 @@ const CoinTable: React.FC = () => {
                 <Td isNumeric>{coin.cmr.toFixed(2)}</Td>
                 <Td>
                   <Badge 
-                    colorScheme={getSignalColor(coin.eeSignal)}
+                    colorScheme={
+                      coin.eeSignal === 'buy' ? 'green' : 
+                      coin.eeSignal === 'sell' ? 'red' : 'yellow'
+                    }
                     fontSize="sm"
                   >
                     {coin.eeSignal.toUpperCase()}
@@ -203,7 +203,10 @@ const CoinTable: React.FC = () => {
                 <Td isNumeric>{coin.rtl.toFixed(2)}%</Td>
                 <Td>
                   <Badge 
-                    colorScheme={getRiskColor(coin.riskLevel)}
+                    colorScheme={
+                      coin.riskLevel === 'low' ? 'green' : 
+                      coin.riskLevel === 'medium' ? 'yellow' : 'red'
+                    }
                     fontSize="sm"
                   >
                     {coin.riskLevel.toUpperCase()}
