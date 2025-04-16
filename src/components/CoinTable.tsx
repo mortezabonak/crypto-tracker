@@ -30,10 +30,10 @@ interface Coin {
   price_change_percentage_24h: number;
   total_volume: number;
   cmr: number;
-  eeSignal: 'buy' | 'sell' | 'neutral';
+  eeSignal: 'Buy' | 'Sell' | 'Neutral' | 'Strong Buy';
   potMult: number;
   rtl: number;
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: 'Low' | 'High';
 }
 
 const CoinTable: React.FC = () => {
@@ -44,15 +44,16 @@ const CoinTable: React.FC = () => {
 
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
+  const textColor = useColorModeValue('gray.800', 'gray.200');
 
   const generateRandomValues = (coin: Coin) => {
     return {
       ...coin,
       cmr: Math.random() * 100,
-      eeSignal: ['buy', 'sell', 'neutral'][Math.floor(Math.random() * 3)] as 'buy' | 'sell' | 'neutral',
+      eeSignal: ['Buy', 'Sell', 'Neutral', 'Strong Buy'][Math.floor(Math.random() * 4)] as 'Buy' | 'Sell' | 'Neutral' | 'Strong Buy',
       potMult: Math.random() * 5,
       rtl: Math.random() * 100,
-      riskLevel: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as 'low' | 'medium' | 'high'
+      riskLevel: ['Low', 'High'][Math.floor(Math.random() * 2)] as 'Low' | 'High'
     };
   };
 
@@ -88,23 +89,23 @@ const CoinTable: React.FC = () => {
     return `${value.toFixed(2)}%`;
   };
 
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'low': return 'green.400';
-      case 'medium': return 'yellow.400';
-      case 'high': return 'red.400';
-      default: return 'gray.400';
-    }
-  };
+  // const getRiskColor = (risk: string) => {
+  //   switch (risk) {
+  //     case 'Low': return 'green.400';
+  //     // case 'Medium': return 'yellow.400';
+  //     case 'High': return 'red.400';
+  //     default: return 'gray.400';
+  //   }
+  // };
 
-  const getSignalColor = (signal: string) => {
-    switch (signal) {
-      case 'buy': return 'green.400';
-      case 'sell': return 'red.400';
-      case 'neutral': return 'yellow.400';
-      default: return 'gray.400';
-    }
-  };
+  // const getSignalColor = (signal: string) => {
+  //   switch (signal) {
+  //     case 'buy': return 'green.400';
+  //     case 'sell': return 'red.400';
+  //     case 'neutral': return 'yellow.400';
+  //     default: return 'gray.400';
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -122,16 +123,16 @@ const CoinTable: React.FC = () => {
         <Table variant="simple" size="md">
           <Thead>
             <Tr>
-              <Th>Coin</Th>
-              <Th isNumeric>Price</Th>
-              <Th isNumeric>24h Change</Th>
-              <Th isNumeric>Market Cap</Th>
-              <Th isNumeric>Volume</Th>
-              <Th isNumeric>CMR</Th>
-              <Th>E/E Signal</Th>
-              <Th isNumeric>POT.MULT.</Th>
-              <Th isNumeric>RTL</Th>
-              <Th>Risk Level</Th>
+              <Th fontSize="md" fontWeight="bold" color={textColor}>Coin</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>Price</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>24h Change</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>Market Cap</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>Volume</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>CMR</Th>
+              <Th fontSize="md" fontWeight="bold" color={textColor}>E/E Signal</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor} width="100px">POT.MULT.</Th>
+              <Th isNumeric fontSize="md" fontWeight="bold" color={textColor}>RTL</Th>
+              <Th fontSize="md" fontWeight="bold" color={textColor}>Risk Level</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -140,76 +141,89 @@ const CoinTable: React.FC = () => {
                 key={coin.id}
                 onClick={() => navigate(`/coin/${coin.id}`)}
                 cursor="pointer"
-                _hover={{ bg: hoverBg }}
-                transition="background-color 0.2s"
+                _hover={{ 
+                  bg: hoverBg,
+                  transform: 'scale(1.01)',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                transition="all 0.2s ease-in-out"
               >
                 <Td>
-                  <HStack>
+                  <HStack spacing={3}>
                     <Box
-                      w="32px"
-                      h="32px"
+                      w="40px"
+                      h="40px"
                       borderRadius="full"
                       overflow="hidden"
                       border={`2px solid ${borderColor}`}
+                      boxShadow="md"
+                      transition="transform 0.2s ease-in-out"
+                      _hover={{ transform: 'scale(1.1)' }}
                     >
                       <img src={coin.image} alt={coin.name} width="100%" height="100%" />
                     </Box>
                     <VStack align="start" spacing={0}>
-                      <Text fontWeight="bold">{coin.name}</Text>
-                      <Badge colorScheme="gray">{coin.symbol.toUpperCase()}</Badge>
+                      <Text fontWeight="bold" fontSize="md">{coin.name}</Text>
+                      <Badge colorScheme="gray" fontSize="xs">{coin.symbol.toUpperCase()}</Badge>
                     </VStack>
                   </HStack>
                 </Td>
-                <Td isNumeric fontWeight="bold">
+                <Td isNumeric fontWeight="bold" fontSize="md">
                   {formatCurrency(coin.current_price)}
                 </Td>
                 <Td isNumeric>
-                  <HStack justify="flex-end">
+                  <HStack justify="flex-end" spacing={1}>
                     {coin.price_change_percentage_24h >= 0 ? (
                       <FaArrowUp color="green" />
                     ) : (
                       <FaArrowDown color="red" />
                     )}
                     <Text
+                      fontWeight="bold"
                       color={
                         coin.price_change_percentage_24h >= 0
-                          ? colorMode === 'light'
-                            ? 'green.500'
-                            : 'green.300'
-                          : colorMode === 'light'
-                          ? 'red.500'
-                          : 'red.300'
+                          ? 'green.500'
+                          : 'red.500'
                       }
                     >
                       {formatPercentage(coin.price_change_percentage_24h)}
                     </Text>
                   </HStack>
                 </Td>
-                <Td isNumeric>{formatCurrency(coin.market_cap)}</Td>
-                <Td isNumeric>{formatCurrency(coin.total_volume)}</Td>
-                <Td isNumeric>{coin.cmr.toFixed(2)}</Td>
+                <Td isNumeric fontSize="md">{formatCurrency(coin.market_cap)}</Td>
+                <Td isNumeric fontSize="md">{formatCurrency(coin.total_volume)}</Td>
+                <Td isNumeric fontSize="md" fontWeight="bold">{coin.cmr.toFixed(2)}</Td>
                 <Td>
                   <Badge 
                     colorScheme={
-                      coin.eeSignal === 'buy' ? 'green' : 
-                      coin.eeSignal === 'sell' ? 'red' : 'yellow'
+                      coin.eeSignal === 'Strong Buy' ? 'green' : 
+                      coin.eeSignal === 'Buy' ? 'green' : 
+                      coin.eeSignal === 'Sell' ? 'red' : 'yellow'
                     }
                     fontSize="sm"
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    boxShadow="sm"
+                    variant={coin.eeSignal === 'Strong Buy' ? 'solid' : 'subtle'}
                   >
-                    {coin.eeSignal.toUpperCase()}
+                    {coin.eeSignal || 'Neutral'}
                   </Badge>
                 </Td>
-                <Td isNumeric>{coin.potMult.toFixed(2)}x</Td>
-                <Td isNumeric>{coin.rtl.toFixed(2)}%</Td>
+                <Td fontSize="md" fontWeight="bold" textAlign={'center'}>
+                  {coin.potMult.toFixed(2)}x
+                </Td>
+                <Td isNumeric fontSize="md" fontWeight="bold">{coin.rtl.toFixed(2)}%</Td>
                 <Td>
                   <Badge 
-                    colorScheme={
-                      coin.riskLevel === 'low' ? 'green' : 
-                      coin.riskLevel === 'medium' ? 'yellow' : 'red'
-                    }
+                    colorScheme={coin.riskLevel === 'Low' ? 'green' : 'red'}
                     fontSize="sm"
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    boxShadow="sm"
                   >
-                    {coin.riskLevel.toUpperCase()}
+                    {coin.riskLevel || 'High'}
                   </Badge>
                 </Td>
               </Tr>
