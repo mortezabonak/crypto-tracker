@@ -13,13 +13,11 @@ import {
   Th,
   Td,
   TableContainer,
-  Badge,
   VStack,
   HStack,
   Link as ChakraLink,
   useColorModeValue,
   Spinner,
-  Stack,
   Button,
   SimpleGrid,
   Stat,
@@ -37,9 +35,7 @@ const CoinDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<Section>('description');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const buttonBg = useColorModeValue('white', 'gray.800');
-  const activeButtonBg = useColorModeValue('blue.50', 'blue.900');
-
+  
   useEffect(() => {
     const fetchData = async () => {
       if (id) {

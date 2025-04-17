@@ -6,7 +6,6 @@ import {
   Tr,
   Th,
   Td,
-  TableContainer,
   Text,
   useColorModeValue,
   Skeleton,
@@ -17,7 +16,6 @@ import {
   Image,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { keyframes } from '@emotion/react';
 
 interface Coin {
@@ -44,7 +42,6 @@ const CoinTable: React.FC = () => {
 
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
-  const textColor = useColorModeValue('gray.800', 'gray.200');
 
   // Add back the animation keyframes
   const clickAnimation = keyframes`
