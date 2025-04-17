@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChakraProvider, Box, Heading, Container, Text, VStack, useColorModeValue, HStack } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
@@ -28,15 +27,29 @@ function App() {
     <ChakraProvider>
       <Router>
         <Box minH="100vh" bg={bgColor} color={textColor} overflow="visible">
-          <Container maxW="container.xl" py={8} overflow="visible">
-            <VStack spacing={8} align="stretch" overflow="visible">
-              <HStack justify="space-between" align="center">
-                <Box textAlign="center" py={8}>
+          <Container 
+            maxW="container.xl" 
+            py={[4, 6, 8]}
+            px={[4, 6, 8]}
+            overflow="visible"
+          >
+            <VStack spacing={[4, 6, 8]} align="stretch" overflow="visible">
+              <HStack 
+                justify="space-between" 
+                align="center"
+                flexDir={["column", "column", "row"]}
+                spacing={[4, 6, 8]}
+              >
+                <Box 
+                  textAlign={["center", "center", "left"]}
+                  py={[4, 6, 8]} 
+                  width="full"
+                >
                   <Link to="/">
                     <Heading 
-                      size="2xl" 
-                      mb={4}
-                      padding={1}
+                      size={["xl", "2xl"]}
+                      mb={[2, 3, 4]}
+                      padding={[1, 2]}
                       bgGradient={headingGradient}
                       bgClip="text"
                       fontWeight="extrabold"
@@ -51,19 +64,25 @@ function App() {
                       Cryptocurrency Market
                     </Heading>
                   </Link>
-                  <Text fontSize="lg" color={useColorModeValue('gray.500', 'gray.400')}>
+                  <Text 
+                    fontSize={["md", "lg"]}
+                    color={useColorModeValue('gray.500', 'gray.400')}
+                  >
                     Real-time cryptocurrency prices and market data
                   </Text>
                 </Box>
               </HStack>
               <Box 
-                borderRadius="xl" 
+                // borderRadius="xl" 
                 boxShadow="xl" 
-                p={8} 
+                p={[4, 6, 8]}
                 bg={cardBg}
-                minH="1000px"
+                minH={["auto", "auto", "1000px"]}
                 display="flex"
                 flexDirection="column"
+                overflow="auto"
+                mx={[-4, -2, 0]}
+                borderRadius={["0", "xl"]}
               >
                 <Routes>
                   <Route path="/" element={<CoinTable />} />

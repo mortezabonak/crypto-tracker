@@ -19,8 +19,12 @@ import {
   Link as ChakraLink,
   useColorModeValue,
   Spinner,
-  Grid,
+  Stack,
   Button,
+  SimpleGrid,
+  Stat,
+  StatLabel,
+  StatNumber,
 } from '@chakra-ui/react';
 import { getCoinDetail } from '../services/api';
 import { CoinDetailType } from '../types/types';
@@ -131,115 +135,89 @@ const CoinDetail = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <VStack spacing={8} align="stretch">
+    <Box p={4}>
+      <VStack spacing={6} align="stretch">
+        {/* Header */}
+        <HStack spacing={4}>
+          <Image src={coin.image.large} alt={coin.name} boxSize="48px" />
+          <Box>
+            <Heading size="lg">{coin.name}</Heading>
+            <Text color="gray.500">{coin.symbol.toUpperCase()}</Text>
+          </Box>
+        </HStack>
+
+        {/* Market Data */}
         <Box>
-          <HStack spacing={4} mb={4}>
-            <Image src={coin.image.large} alt={coin.name} boxSize="48px" />
-            <Box>
-              <Heading size="xl">{coin.name}</Heading>
-              <Text fontSize="lg" color="gray.500">
-                {coin.symbol.toUpperCase()}
-              </Text>
-            </Box>
+          <Heading size="md" mb={4}>Market Data</Heading>
+          <SimpleGrid columns={[1, 2]} spacing={4}>
+            <Stat>
+              <StatLabel>Price</StatLabel>
+              <StatNumber>${coin.market_data.current_price.usd.toLocaleString()}</StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel>24h Change</StatLabel>
+              <StatNumber color={coin.market_data.price_change_percentage_24h >= 0 ? 'green.500' : 'red.500'}>
+                {coin.market_data.price_change_percentage_24h.toFixed(2)}%
+              </StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel>Market Cap</StatLabel>
+              <StatNumber>${(coin.market_data.market_cap.usd / 1000000000).toFixed(2)}B</StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel>Volume</StatLabel>
+              <StatNumber>${(coin.market_data.total_volume.usd / 1000000000).toFixed(2)}B</StatNumber>
+            </Stat>
+          </SimpleGrid>
+        </Box>
+
+        {/* Modified Navigation Buttons */}
+        <Box>
+          <HStack spacing={2}>
+            <Button
+              flex="1"
+              variant={activeSection === 'description' ? 'solid' : 'outline'}
+              colorScheme="blue"
+              size={["sm", "md"]}
+              fontSize={["xs", "sm"]}
+              onClick={() => setActiveSection('description')}
+            >
+              Description
+            </Button>
+            <Button
+              flex="1"
+              variant={activeSection === 'links' ? 'solid' : 'outline'}
+              colorScheme="blue"
+              size={["sm", "md"]}
+              fontSize={["xs", "sm"]}
+              onClick={() => setActiveSection('links')}
+            >
+              Links
+            </Button>
+            <Button
+              flex="1"
+              variant={activeSection === 'developer' ? 'solid' : 'outline'}
+              colorScheme="blue"
+              size={["sm", "md"]}
+              fontSize={["xs", "sm"]}
+              onClick={() => setActiveSection('developer')}
+            >
+              Dev Data
+            </Button>
           </HStack>
         </Box>
 
+        {/* Content Section */}
         <Box>
-          <Heading size="md" mb={4}>Market Data</Heading>
-          <TableContainer>
-            <Table variant="simple" size="md">
-              <Thead>
-                <Tr>
-                  <Th borderColor={borderColor}>Metric</Th>
-                  <Th isNumeric borderColor={borderColor}>Value</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr>
-                  <Td borderColor={borderColor}>Current Price</Td>
-                  <Td isNumeric borderColor={borderColor}>
-                    ${coin.market_data.current_price.usd.toLocaleString()}
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td borderColor={borderColor}>Market Cap</Td>
-                  <Td isNumeric borderColor={borderColor}>
-                    ${(coin.market_data.market_cap.usd / 1000000000).toFixed(2)}B
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td borderColor={borderColor}>24h Change</Td>
-                  <Td isNumeric borderColor={borderColor}>
-                    <Badge colorScheme={coin.market_data.price_change_percentage_24h >= 0 ? 'green' : 'red'}>
-                      {coin.market_data.price_change_percentage_24h.toFixed(2)}%
-                    </Badge>
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td borderColor={borderColor}>Circulating Supply</Td>
-                  <Td isNumeric borderColor={borderColor}>
-                    {coin.market_data.circulating_supply.toLocaleString()}
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td borderColor={borderColor}>Total Supply</Td>
-                  <Td isNumeric borderColor={borderColor}>
-                    {coin.market_data.total_supply.toLocaleString()}
-                  </Td>
-                </Tr>
-                {coin.market_data.max_supply && (
-                  <Tr>
-                    <Td borderColor={borderColor}>Max Supply</Td>
-                    <Td isNumeric borderColor={borderColor}>
-                      {coin.market_data.max_supply.toLocaleString()}
-                    </Td>
-                  </Tr>
-                )}
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <Heading size="md" mb={4}>
+            {activeSection === 'developer' ? 'Developer Data' : 
+             activeSection === 'description' ? 'Description' : 
+             'Links'}
+          </Heading>
+          {renderContent()}
         </Box>
-
-        <Grid templateColumns="1fr 300px" gap={8}>
-          <Box>
-            <Heading size="md" mb={4}>Additional Information</Heading>
-            {renderContent()}
-          </Box>
-          <Box>
-            <VStack spacing={2} align="stretch">
-              <Button
-                variant="ghost"
-                justifyContent="flex-start"
-                bg={activeSection === 'description' ? activeButtonBg : buttonBg}
-                onClick={() => setActiveSection('description')}
-                leftIcon={<Text>📝</Text>}
-              >
-                Description
-              </Button>
-              <Button
-                variant="ghost"
-                justifyContent="flex-start"
-                bg={activeSection === 'links' ? activeButtonBg : buttonBg}
-                onClick={() => setActiveSection('links')}
-                leftIcon={<Text>🔗</Text>}
-              >
-                Links
-              </Button>
-              <Button
-                variant="ghost"
-                justifyContent="flex-start"
-                bg={activeSection === 'developer' ? activeButtonBg : buttonBg}
-                onClick={() => setActiveSection('developer')}
-                leftIcon={<Text>👨‍💻</Text>}
-              >
-                Developer Data
-              </Button>
-            </VStack>
-          </Box>
-        </Grid>
       </VStack>
-    </Container>
+    </Box>
   );
 };
 
