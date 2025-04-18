@@ -42,13 +42,7 @@ const CoinTable: React.FC = () => {
 
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.50', 'gray.700');
-
-  // Add back the animation keyframes
-  const clickAnimation = keyframes`
-    0% { transform: scale(1); }
-    50% { transform: scale(0.98); }
-    100% { transform: scale(1); }
-  `;
+  const cardBg = useColorModeValue('white', 'gray.800');
 
   const fadeIn = keyframes`
     from { opacity: 0; transform: translateY(10px); }
@@ -128,40 +122,41 @@ const CoinTable: React.FC = () => {
 
   return (
     <Box width="100%">
-      {/* Mobile View */}
+      {/* Enhanced Mobile View with ALL parameters */}
       <Box display={["block", "none"]} width="100%">
         {coins.map((coin, index) => (
-          <Box 
+          <Box
             key={coin.id}
             onClick={() => navigate(`/coin/${coin.id}`)}
             cursor="pointer"
             p={4}
-            borderBottom="1px"
+            mb={3}
+            borderRadius="lg"
+            boxShadow="sm"
+            bg={cardBg}
+            borderWidth="1px"
             borderColor={borderColor}
             transition="all 0.2s ease-in-out"
             _hover={{ 
-              bg: hoverBg,
-              transform: 'translateX(5px)',
-              boxShadow: 'sm'
-            }}
-            _active={{
-              animation: `${clickAnimation} 0.2s ease-in-out`
+              transform: 'translateY(-2px)',
+              boxShadow: 'md'
             }}
             animation={`${fadeIn} 0.3s ease-out forwards`}
             style={{
               animationDelay: `${index * 0.05}s`
             }}
           >
-            <HStack justify="space-between" width="100%">
+            {/* Main Info Row */}
+            <HStack justify="space-between" width="100%" mb={3}>
               <HStack spacing={3}>
-                <Image src={coin.image} alt={coin.name} boxSize="32px" />
+                <Image src={coin.image} alt={coin.name} boxSize="40px" />
                 <Box>
-                  <Text fontWeight="bold">{coin.name}</Text>
+                  <Text fontWeight="bold" fontSize="md">{coin.name}</Text>
                   <Text fontSize="sm" color="gray.500">{coin.symbol.toUpperCase()}</Text>
                 </Box>
               </HStack>
               <Box textAlign="right">
-                <Text fontWeight="medium">{formatCurrency(coin.current_price)}</Text>
+                <Text fontWeight="bold">{formatCurrency(coin.current_price)}</Text>
                 <Text
                   color={coin.price_change_percentage_24h >= 0 ? 'green.500' : 'red.500'}
                   fontWeight="medium"
@@ -171,25 +166,107 @@ const CoinTable: React.FC = () => {
                 </Text>
               </Box>
             </HStack>
+            
+            {/* Additional Parameters - 3x2 Grid */}
+            <Box 
+              display="grid" 
+              gridTemplateColumns="1fr 1fr" 
+              gap={3}
+              fontSize="sm"
+            >
+              {/* First Row */}
+              <Box>
+                <Text color="gray.500" fontSize="xs">MARKET CAP</Text>
+                <Text fontWeight="medium">
+                  ${(coin.market_cap / 1000000).toFixed(2)}M
+                </Text>
+              </Box>
+              
+              <Box>
+                <Text color="gray.500" fontSize="xs">VOLUME</Text>
+                <Text fontWeight="medium">
+                  ${(coin.total_volume / 1000000).toFixed(2)}M
+                </Text>
+              </Box>
+              
+              {/* Second Row */}
+              <Box>
+                <Text color="gray.500" fontSize="xs">CMR</Text>
+                <Text fontWeight="medium">{coin.cmr.toFixed(2)}</Text>
+              </Box>
+              
+              <Box>
+                <Text color="gray.500" fontSize="xs">POT.MULT.</Text>
+                <Text fontWeight="medium" color={coin.potMult > 2 ? "purple.500" : undefined}>
+                  {coin.potMult.toFixed(1)}x
+                </Text>
+              </Box>
+              
+              {/* Third Row */}
+              <Box>
+                <Text color="gray.500" fontSize="xs">RTL</Text>
+                <Text fontWeight="medium">{coin.rtl.toFixed(2)}%</Text>
+              </Box>
+              
+              <Box>
+                <Text color="gray.500" fontSize="xs">RISK LEVEL</Text>
+                <Badge
+                  colorScheme={coin.riskLevel === 'Low' ? 'green' : 'red'}
+                  variant="subtle"
+                  size="sm"
+                >
+                  {coin.riskLevel}
+                </Badge>
+              </Box>
+              
+              {/* Fourth Row - Signal - ENHANCED */}
+              <Box 
+                gridColumn="span 2" 
+                mt={3}
+                mb={1}
+                py={2}
+                borderTop="1px solid"
+                borderColor={borderColor}
+              >
+                <Text color="gray.500" fontSize="xs" mb={1}>SIGNAL</Text>
+                <Badge
+                  colorScheme={
+                    coin.eeSignal === 'Strong Buy' ? 'green' : 
+                    coin.eeSignal === 'Buy' ? 'teal' : 
+                    coin.eeSignal === 'Sell' ? 'red' : 'yellow'
+                  }
+                  variant="solid"
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  fontSize="sm"
+                  fontWeight="bold"
+                  textTransform="uppercase"
+                  boxShadow="sm"
+                >
+                  {coin.eeSignal}
+                </Badge>
+              </Box>
+            </Box>
           </Box>
         ))}
       </Box>
 
-      {/* Desktop View */}
-      <Box display={["none", "block"]} maxW="100%" overflow="hidden">
-        <Table variant="simple" size="md">
+      {/* Desktop View - Complete reset */}
+      <Box display={["none", "block"]} width="100%" overflow="auto">
+        <Table variant="simple" size="sm" sx={{ tableLayout: "fixed" }}>
           <Thead>
             <Tr>
-              <Th width="20%">COIN</Th>
-              <Th isNumeric width="10%">PRICE</Th>
-              <Th isNumeric width="8%">24H</Th>
-              <Th isNumeric display={["none", "table-cell"]} width="15%">MARKET CAP</Th>
-              <Th isNumeric display={["none", "table-cell"]} width="12%">VOLUME</Th>
-              <Th isNumeric display={["none", "none", "table-cell"]} width="7%">CMR</Th>
-              <Th display={["none", "none", "table-cell"]} width="10%">SIGNAL</Th>
-              <Th isNumeric display={["none", "none", "table-cell"]} width="6%">POT</Th>
-              <Th isNumeric display={["none", "none", "table-cell"]} width="6%">RTL</Th>
-              <Th display={["none", "none", "table-cell"]} width="6%">RISK</Th>
+              <Th>COIN</Th>
+              <Th isNumeric>PRICE</Th>
+              <Th isNumeric>24H</Th>
+              <Th isNumeric>MKT CAP</Th>
+              <Th isNumeric>VOL</Th>
+              <Th isNumeric>CMR</Th>
+              <Th>SIGNAL</Th>
+              <Th isNumeric>POT</Th>
+              <Th isNumeric>RTL</Th>
+              <Th>RISK</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -198,33 +275,22 @@ const CoinTable: React.FC = () => {
                 key={coin.id}
                 onClick={() => navigate(`/coin/${coin.id}`)}
                 cursor="pointer"
-                transition="all 0.2s ease-in-out"
-                _hover={{ 
-                  bg: hoverBg,
-                  transform: 'translateY(-2px)',
-                  boxShadow: 'sm'
-                }}
-                _active={{
-                  animation: `${clickAnimation} 0.2s ease-in-out`
-                }}
+                _hover={{ bg: hoverBg }}
                 animation={`${fadeIn} 0.3s ease-out forwards`}
                 style={{
                   animationDelay: `${index * 0.05}s`
                 }}
               >
-                <Td width="20%">
-                  <HStack spacing={3}>
-                    <Image src={coin.image} alt={coin.name} boxSize="32px" />
-                    <Box>
-                      <Text fontWeight="bold" noOfLines={1}>{coin.name}</Text>
-                      <Text fontSize="sm" color="gray.500">{coin.symbol.toUpperCase()}</Text>
-                    </Box>
+                <Td>
+                  <HStack spacing={2}>
+                    <Image src={coin.image} alt={coin.name} boxSize="24px" />
+                    <Text fontWeight="bold" noOfLines={1}>{coin.name}</Text>
                   </HStack>
                 </Td>
-                <Td isNumeric width="10%">
+                <Td isNumeric>
                   {formatCurrency(coin.current_price)}
                 </Td>
-                <Td isNumeric width="8%">
+                <Td isNumeric>
                   <Text
                     color={coin.price_change_percentage_24h >= 0 ? 'green.500' : 'red.500'}
                     fontWeight="medium"
@@ -232,35 +298,41 @@ const CoinTable: React.FC = () => {
                     {formatPercentage(coin.price_change_percentage_24h)}
                   </Text>
                 </Td>
-                <Td isNumeric display={["none", "table-cell"]} width="15%">
-                  {formatCurrency(coin.market_cap)}
+                <Td isNumeric>
+                  {coin.market_cap >= 1000000000 
+                    ? `$${(coin.market_cap / 1000000000).toFixed(1)}B` 
+                    : `$${(coin.market_cap / 1000000).toFixed(0)}M`}
                 </Td>
-                <Td isNumeric display={["none", "table-cell"]} width="12%">
-                  {formatCurrency(coin.total_volume)}
+                <Td isNumeric>
+                  {coin.total_volume >= 1000000000
+                    ? `$${(coin.total_volume / 1000000000).toFixed(1)}B`
+                    : `$${(coin.total_volume / 1000000).toFixed(0)}M`}
                 </Td>
-                <Td isNumeric display={["none", "none", "table-cell"]} width="7%">
-                  {coin.cmr.toFixed(2)}
+                <Td isNumeric>
+                  {coin.cmr.toFixed(1)}
                 </Td>
-                <Td display={["none", "none", "table-cell"]} width="10%">
+                <Td>
                   <Badge 
                     colorScheme={
                       coin.eeSignal === 'Strong Buy' ? 'green' : 
                       coin.eeSignal === 'Buy' ? 'teal' : 
                       coin.eeSignal === 'Sell' ? 'red' : 'yellow'
                     }
+                    fontSize="xs"
                   >
                     {coin.eeSignal}
                   </Badge>
                 </Td>
-                <Td isNumeric display={["none", "none", "table-cell"]} width="6%">
+                <Td isNumeric>
                   {coin.potMult.toFixed(1)}x
                 </Td>
-                <Td isNumeric display={["none", "none", "table-cell"]} width="6%">
-                  {coin.rtl.toFixed(2)}%
+                <Td isNumeric>
+                  {coin.rtl.toFixed(1)}%
                 </Td>
-                <Td display={["none", "none", "table-cell"]} width="6%">
+                <Td>
                   <Badge 
                     colorScheme={coin.riskLevel === 'Low' ? 'green' : 'red'}
+                    fontSize="xs"
                   >
                     {coin.riskLevel}
                   </Badge>
