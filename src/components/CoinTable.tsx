@@ -14,9 +14,14 @@ import {
   HStack,
   VStack,
   Image,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
+import { SearchIcon } from '@chakra-ui/icons';
+import { motion } from 'framer-motion';
 
 interface Coin {
   id: string;
@@ -38,6 +43,7 @@ interface Coin {
 const CoinTable: React.FC = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -92,23 +98,15 @@ const CoinTable: React.FC = () => {
     return `${value.toFixed(2)}%`;
   };
 
-  // const getRiskColor = (risk: string) => {
-  //   switch (risk) {
-  //     case 'Low': return 'green.400';
-  //     // case 'Medium': return 'yellow.400';
-  //     case 'High': return 'red.400';
-  //     default: return 'gray.400';
-  //   }
-  // };
+  // Filter coins based on search query
+  const filteredCoins = coins.filter(coin => 
+    coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    coin.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  // const getSignalColor = (signal: string) => {
-  //   switch (signal) {
-  //     case 'buy': return 'green.400';
-  //     case 'sell': return 'red.400';
-  //     case 'neutral': return 'yellow.400';
-  //     default: return 'gray.400';
-  //   }
-  // };
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   if (loading) {
     return (
@@ -122,9 +120,47 @@ const CoinTable: React.FC = () => {
 
   return (
     <Box width="100%">
+      {/* Search input with animation */}
+      <Box 
+        mb={4} 
+        as={motion.div}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 } as any}
+      >
+        <InputGroup
+          as={motion.div}
+          whileHover={{ scale: 1.02 }}
+          whileFocus={{ scale: 1.02, boxShadow: "0 0 0 3px rgba(66, 153, 225, 0.6)" }}
+        >
+          <InputLeftElement 
+            pointerEvents="none"
+            as={motion.div}
+            animate={{ rotate: searchQuery ? [0, 15, 0] : 0 }}
+            transition={{ duration: 0.3 } as any}
+          >
+            <SearchIcon color={searchQuery ? "blue.500" : "gray.400"} />
+          </InputLeftElement>
+          <Input
+            placeholder="Search coins..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            borderColor={borderColor}
+            _focus={{ 
+              borderColor: "blue.400",
+              boxShadow: "0 0 0 1px rgba(66, 153, 225, 0.6)"
+            }}
+            as={motion.input}
+            variants={{
+              focus: { scale: 1.02 }
+            }}
+          />
+        </InputGroup>
+      </Box>
+      
       {/* Enhanced Mobile View with ALL parameters */}
       <Box display={["block", "none"]} width="100%">
-        {coins.map((coin, index) => (
+        {filteredCoins.map((coin, index) => (
           <Box
             key={coin.id}
             onClick={() => navigate(`/coin/${coin.id}`)}
@@ -270,7 +306,7 @@ const CoinTable: React.FC = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {coins.map((coin, index) => (
+            {filteredCoins.map((coin, index) => (
               <Tr
                 key={coin.id}
                 onClick={() => navigate(`/coin/${coin.id}`)}
