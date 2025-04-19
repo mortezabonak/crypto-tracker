@@ -8,6 +8,11 @@ export interface Coin {
   market_cap_rank: number;
   price_change_percentage_24h: number;
   total_volume: number;
+  cmr: number;
+  eeSignal: 'Buy' | 'Sell' | 'Neutral' | 'Strong Buy';
+  potMult: number;
+  rtl: number;
+  riskLevel: 'Low' | 'High';
 }
 
 export interface CoinDetailType {

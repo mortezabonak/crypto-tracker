@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
   Box,
   Container,
@@ -24,29 +23,16 @@ import {
   StatLabel,
   StatNumber,
 } from '@chakra-ui/react';
-import { coinGeckoService } from '../services/api';
-import { CoinDetailType } from '../types/types';
+import { Link } from 'react-router-dom';
+import { useCoinDetail } from '../../hooks/useCoinDetail';
+import { formatCurrency, formatPercentage, formatLargeNumber } from '../../utils/formatters';
 
 type Section = 'description' | 'links' | 'developer';
 
-const CoinDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const [coin, setCoin] = useState<CoinDetailType | null>(null);
-  const [loading, setLoading] = useState(true);
+export const CoinDetail: React.FC = () => {
+  const { coin, loading, error } = useCoinDetail();
   const [activeSection, setActiveSection] = useState<Section>('description');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      if (id) {
-        const data = await coinGeckoService.getCoinDetail(id);
-        setCoin(data);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id]);
 
   if (loading) {
     return (
@@ -56,10 +42,10 @@ const CoinDetail = () => {
     );
   }
 
-  if (!coin) {
+  if (error || !coin) {
     return (
       <Container maxW="container.xl" py={8}>
-        <Text>Coin not found</Text>
+        <Text>{error || 'Coin not found'}</Text>
         <Link to="/">Back to Home</Link>
       </Container>
     );
@@ -148,26 +134,26 @@ const CoinDetail = () => {
           <SimpleGrid columns={[1, 2]} spacing={4}>
             <Stat>
               <StatLabel>Price</StatLabel>
-              <StatNumber>${coin.market_data.current_price.usd.toLocaleString()}</StatNumber>
+              <StatNumber>{formatCurrency(coin.market_data.current_price.usd)}</StatNumber>
             </Stat>
             <Stat>
               <StatLabel>24h Change</StatLabel>
               <StatNumber color={coin.market_data.price_change_percentage_24h >= 0 ? 'green.500' : 'red.500'}>
-                {coin.market_data.price_change_percentage_24h.toFixed(2)}%
+                {formatPercentage(coin.market_data.price_change_percentage_24h)}
               </StatNumber>
             </Stat>
             <Stat>
               <StatLabel>Market Cap</StatLabel>
-              <StatNumber>${(coin.market_data.market_cap.usd / 1000000000).toFixed(2)}B</StatNumber>
+              <StatNumber>{formatLargeNumber(coin.market_data.market_cap.usd)}</StatNumber>
             </Stat>
             <Stat>
               <StatLabel>Volume</StatLabel>
-              <StatNumber>${(coin.market_data.total_volume.usd / 1000000000).toFixed(2)}B</StatNumber>
+              <StatNumber>{formatLargeNumber(coin.market_data.total_volume.usd)}</StatNumber>
             </Stat>
           </SimpleGrid>
         </Box>
 
-        {/* Modified Navigation Buttons */}
+        {/* Navigation Buttons */}
         <Box>
           <HStack spacing={2}>
             <Button
@@ -215,6 +201,4 @@ const CoinDetail = () => {
       </VStack>
     </Box>
   );
-};
-
-export default CoinDetail; 
+}; 
